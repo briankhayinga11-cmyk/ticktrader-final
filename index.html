@@ -554,6 +554,43 @@
   body.light .chat-panel, body.light .market-menu, body.light .toast { background:#ffffff; }
   body.light .ds-cell:hover { background:rgba(227,232,240,0.7); }
 
+    /* ============ DIGIT STRIP — live digit: green fill if even, red if odd ============ */
+  .ds-cell .marker { opacity:0; transition:opacity 0.2s; }
+  .ds-cell.cur .d { color:#fff; border-color:transparent; }
+  .ds-cell.cur.even .d { background:linear-gradient(135deg,#17c7a4,#0fb596); box-shadow:0 0 14px rgba(23,199,164,0.65); }
+  .ds-cell.cur.odd  .d { background:linear-gradient(135deg,#e5484d,#c73a3f); box-shadow:0 0 14px rgba(229,72,77,0.65); }
+  .ds-cell.cur .pct { color:var(--text); font-weight:700; }
+  .ds-cell.cur.even .marker { color:var(--teal); opacity:1; }
+  .ds-cell.cur.odd  .marker { color:var(--red); opacity:1; }
+
+  /* ============ BOT STATUS LINE + RUN BUTTON (screenshot style) ============ */
+  .bot-line { display:none; align-items:center; gap:10px; background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin:12px 0 8px; font-size:12.5px; }
+  .bot-line.on { display:flex; }
+  .bot-line .b-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+  .bot-line.running .b-dot { background:var(--teal); animation:pulse 1.6s infinite; }
+  .bot-line .b-name { color:var(--gold); font-weight:800; }
+  .bot-line.running .b-name { color:var(--teal); }
+  .bot-line .b-stats { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .bot-line .b-right { margin-left:auto; display:flex; gap:10px; align-items:center; font-variant-numeric:tabular-nums; }
+  .bot-line .b-stake { color:var(--muted); }
+  .bot-line .b-pnl { font-weight:800; }
+  .bot-line .b-pnl.up { color:var(--teal); } .bot-line .b-pnl.down { color:var(--red); }
+  .bot-run { width:100%; border:none; border-radius:10px; padding:14px; font-weight:800; font-size:14px; cursor:pointer; background:linear-gradient(135deg,#f5c451,#f59e0b); color:#241a02; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 18px rgba(245,196,81,0.25); }
+  .bot-run:hover { filter:brightness(1.08); transform:translateY(-1px); }
+
+  /* ============ PAYMENT INSTRUCTIONS (M-Pesa / Bank / Crypto) ============ */
+  .pay-info { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin:12px 0; }
+  .pay-info .pi-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px dashed var(--border); font-size:12.5px; }
+  .pay-info .pi-row:last-child { border-bottom:none; }
+  .pay-info .pi-row .k { color:var(--muted); flex-shrink:0; }
+  .pay-info .pi-row .v { font-weight:700; text-align:right; word-break:break-all; }
+  .pay-info .copy { background:var(--panel-3); border:1px solid var(--border); color:var(--muted); border-radius:7px; padding:4px 9px; font-size:10.5px; cursor:pointer; flex-shrink:0; font-weight:700; }
+  .pay-info .copy:hover { color:var(--teal); border-color:var(--teal); }
+  .pay-warn { color:var(--gold); font-size:11px; line-height:1.5; margin-top:8px; }
+  .dep-state { display:none; align-items:center; gap:10px; border-radius:10px; padding:12px 14px; font-size:12.5px; margin-bottom:10px; line-height:1.5; }
+  .dep-state.pending { display:flex; background:rgba(245,196,81,0.1); border:1px solid rgba(245,196,81,0.35); color:var(--gold); }
+  .dep-state.ok { display:flex; background:var(--teal-dim); border:1px solid rgba(23,199,164,0.4); color:var(--teal); }
+  
   /* ============ RESPONSIVE ============ */
   @media (max-width:1100px) { .terminal { grid-template-columns:240px 1fr 300px; } }
   @media (max-width:920px) {
@@ -853,7 +890,13 @@
 
       <div class="field-row"><label>⏱ Duration (ticks)</label><input id="ticksInput" type="number" value="5" min="1" max="10" /></div>
 
-      <div class="payout-line"><span>Payout</span><b id="payoutAmt">19.52 USD</b></div>
+            <div class="payout-line"><span>Payout</span><b id="payoutAmt">19.52 USD</b></div>
+      <div class="bot-line" id="botLine">
+        <span class="b-dot"></span><span class="b-name">Bot</span>
+        <span class="b-stats" id="botStats"></span>
+        <span class="b-right"><span class="b-stake" id="botStake"></span><span class="b-pnl" id="botPnl"></span></span>
+      </div>
+      <button class="bot-run hidden" id="botRun">▶ Run Bot</button>
       <div id="buyButtons"></div>
       <button class="stop-auto hidden" id="stopAuto">■ Stop Auto-Trading</button>
       <div class="auto-status hidden" id="autoStatus"></div>
@@ -1022,11 +1065,15 @@
       <div id="depMethods">
         <button class="pay-item" data-method="M-Pesa">
           <div class="pi" style="background:rgba(23,199,164,0.15)">📱</div>
-          <div><div class="pt">M-Pesa</div><div class="ps">Instant mobile money</div></div><div class="arr">→</div>
+          <div><div class="pt">M-Pesa</div><div class="ps">STK push · Paybill · instant</div></div><div class="arr">→</div>
         </button>
         <button class="pay-item" data-method="Card">
           <div class="pi" style="background:rgba(109,93,241,0.18)">💳</div>
           <div><div class="pt">Credit/Debit Card</div><div class="ps">Visa, Mastercard</div></div><div class="arr">→</div>
+        </button>
+        <button class="pay-item" data-method="Bank Transfer">
+          <div class="pi" style="background:rgba(79,109,245,0.18)">🏦</div>
+          <div><div class="pt">Bank Transfer</div><div class="ps">Local &amp; SWIFT</div></div><div class="arr">→</div>
         </button>
         <button class="pay-item" data-method="USDT">
           <div class="pi" style="background:rgba(245,196,81,0.15)">₮</div>
@@ -1040,8 +1087,16 @@
           <button data-amt="100">$100</button><button data-amt="500">$500</button>
         </div>
         <div class="modal-error" id="depError"></div>
-        <button class="btn-primary" id="depConfirm">Deposit</button>
+        <button class="btn-primary" id="depNext">Continue →</button>
         <button class="btn-ghost" id="depBack" style="margin-top:8px">← Back</button>
+      </div>
+      <div id="depPay" class="hidden">
+        <div class="pay-info" id="depInfo"></div>
+        <div class="field"><label id="depFieldLabel">Reference</label><input id="depField" /></div>
+        <div class="dep-state" id="depState"></div>
+        <div class="modal-error" id="depError2"></div>
+        <button class="btn-primary" id="depConfirm">Confirm Deposit</button>
+        <button class="btn-ghost" id="depBack2" style="margin-top:8px">← Back</button>
       </div>
     </div>
   </div>
@@ -1061,6 +1116,7 @@
           <option>M-Pesa</option><option>Bank Transfer</option><option>USDT (TRC20)</option>
         </select>
       </div>
+      <div class="field" style="margin-top:12px"><label id="wdDestLabel">Destination</label><input id="wdDest" /></div>
       <div class="modal-error" id="wdError"></div>
       <button class="btn-primary" id="wdConfirm">Withdraw</button>
     </div>
@@ -1599,11 +1655,13 @@ function updateDigitStrip(){
     $("dsPct"+d).textContent=(counts[d]/n*100).toFixed(1)+"%";
     const arc=$("dsArc"+d);
     arc.classList.remove("hi","lo");
-    if(counts[d]===maxC && maxC!==minC) arc.classList.add("hi");       /* highest % → green quarter */
-    else if(counts[d]===minC && maxC!==minC) arc.classList.add("lo");  /* lowest %  → red quarter   */
+    if(counts[d]===maxC && maxC!==minC) arc.classList.add("hi");
+    else if(counts[d]===minC && maxC!==minC) arc.classList.add("lo");
     $("dsMark"+d).classList.toggle("hidden", d!==cur);
-    if(d===cur) cells[d].classList.add("hot");
-    else cells[d].classList.remove("hot");
+    const cell=cells[d];
+    cell.classList.toggle("cur", d===cur);
+    cell.classList.toggle("even", d%2===0);
+    cell.classList.toggle("odd",  d%2===1);
   }
   lastSeenDigit = cur;
 }
@@ -1832,24 +1890,26 @@ function finishTrade(t, exitDigit){
   saveUserData(); renderBalance(); renderPositions();
   if(!auto.running) showToast(won ? `🎉 Won +${fmtMoney(t.pnl)} (digit ${exitDigit})` : `Lost ${fmtMoney(t.stake)} (digit ${exitDigit})`);
 
-  if(auto.running){
-    if(won){ auto.profit+=t.pnl; auto.curStake=auto.baseStake; }
-    else   { auto.loss+=t.stake; auto.curStake=+(auto.curStake*auto.lossMult).toFixed(2); }
+   if(auto.running){
+    auto.trades=(auto.trades||0)+1;
+    auto.staked=(auto.staked||0)+t.stake;
+    if(won){ auto.wins=(auto.wins||0)+1; auto.profit+=t.pnl; auto.curStake=auto.baseStake; }
+    else   { auto.losses=(auto.losses||0)+1; auto.loss+=t.stake; auto.curStake=+(auto.curStake*auto.lossMult).toFixed(2); }
     updateAutoStatus();
-    if(auto.profit>=auto.targetProfit){ stopAuto(`🎯 Target profit reached: +${fmtMoney(auto.profit)}`); }
+    if(auto.profit>=auto.targetProfit){ stopAuto(`🎯 Target profit reached: +${fmtMoney(auto.profit)} — bot stopped.`); }
     else if(auto.loss>=auto.targetLoss){ stopAuto(`🛑 Stop loss reached: −${fmtMoney(auto.loss)}`); }
     else {
       const sb=Auth.activeBalance();
-      if(auto.curStake>sb || auto.curStake<1){ stopAuto("Auto-trading stopped: insufficient balance."); }
+      if(auto.curStake>sb || auto.curStake<1){ stopAuto("Bot stopped: insufficient balance."); }
       else setTimeout(()=>{ if(auto.running) placeTrade(auto.pred, auto.mult, auto.curStake, auto.ticks); }, 900);
     }
   }
-}
 function updateAutoStatus(){
   $("autoStatus").innerHTML =
-    `🤖 Auto mode — ${TYPE_DEFS[cfg.type].label} · ${auto.pred}${TYPE_DEFS[cfg.type].barrier?" "+(auto.barrier??cfg.barrier):""}<br>
+    `🤖 Bot running — ${TYPE_DEFS[cfg.type].label} · ${auto.pred}${TYPE_DEFS[cfg.type].barrier?" "+(auto.barrier??cfg.barrier):""}<br>
      Next stake: <b>${fmtMoney(auto.curStake)}</b> · Profit: <b style="color:var(--teal)">+${fmtMoney(auto.profit)}</b> / ${fmtMoney(auto.targetProfit)} ·
      Loss: <b style="color:var(--red)">−${fmtMoney(auto.loss)}</b> / ${fmtMoney(auto.targetLoss)}`;
+  updateBotLine();
 }
 function stopAuto(msg){
   auto.running=false;
@@ -2074,27 +2134,32 @@ function aiAnalyze(m,contract){
   const digits=m.points.slice(-100).map(p=>+p.toFixed(DP).slice(-1));
   const n=digits.length||1;
   const counts=Array.from({length:10},(_,d)=>digits.filter(x=>x===d).length);
-  const pct=d=>counts[d]/n*100;
-  const floor=c=>Math.min(99.9,Math.max(0.5,c));
+  const even=(counts[0]+counts[2]+counts[4]+counts[6]+counts[8])/n;
+  const maxC=Math.max(...counts), minC=Math.min(...counts);
+  const spread=(maxC-minC)/n;
+  let strength, pred, barrier=null;
   if(contract==="evenodd"){
-    const even=counts.filter((_,d)=>d%2===0).reduce((a,b)=>a+b,0)/n*100;
-    const sug=even>=50?"EVEN":"ODD";
-    return {pred:sug,barrier:null,suggestion:sug,confidence:floor(Math.abs(even-50)*2)};
-  }
-  if(contract==="matchdiff"){
+    pred = even>=0.5 ? "EVEN":"ODD";
+    strength = Math.abs(even-0.5)*2;
+  } else if(contract==="matchdiff"){
     let hi=0,lo=0;
     for(let d=1;d<10;d++){ if(counts[d]>counts[hi]) hi=d; if(counts[d]<counts[lo]) lo=d; }
-    if(pct(hi)>=100-pct(lo)) return {pred:"MATCH",barrier:hi,suggestion:"MATCH "+hi,confidence:floor(pct(hi))};
-    return {pred:"DIFFER",barrier:lo,suggestion:"DIFFER "+lo,confidence:floor(100-pct(lo))};
+    const matchEdge=(counts[hi]-n/10)/n, differEdge=((n-counts[lo])-n*0.9)/n;
+    if(matchEdge>=differEdge){ pred="MATCH"; barrier=hi; strength=Math.min(1,matchEdge*10); }
+    else { pred="DIFFER"; barrier=lo; strength=Math.min(1,differEdge*10/9); }
+  } else {
+    let best={pred:"OVER",barrier:5,conf:-1};
+    for(let b=1;b<=8;b++){
+      const over=digits.filter(x=>x>b).length/n, under=digits.filter(x=>x<b).length/n;
+      if(over>best.conf) best={pred:"OVER",barrier:b,conf:over};
+      if(under>best.conf) best={pred:"UNDER",barrier:b,conf:under};
+    }
+    pred=best.pred; barrier=best.barrier;
+    strength=Math.abs(best.conf-0.5)*2;
   }
-  let best={pred:"OVER",barrier:5,conf:-1};
-  for(let b=0;b<=9;b++){
-    const over=digits.filter(x=>x>b).length/n*100;
-    const under=digits.filter(x=>x<b).length/n*100;
-    if(over>best.conf) best={pred:"OVER",barrier:b,conf:over};
-    if(under>best.conf) best={pred:"UNDER",barrier:b,conf:under};
-  }
-  return {pred:best.pred,barrier:best.barrier,suggestion:best.pred+" "+best.barrier,confidence:floor(best.conf)};
+  strength=Math.min(1, strength*0.6 + spread*2.2);
+  const confidence=Math.round((70 + strength*29.9)*10)/10;   /* never below 70% */
+  return { pred, barrier, suggestion: pred+(barrier!=null?" "+barrier:""), confidence };
 }
 function updateAiDesc(){
   const v=$("aiContract").value;
@@ -2107,7 +2172,7 @@ function updateAiDesc(){
 $("aiContract").addEventListener("change",updateAiDesc);
 updateAiDesc();
 
-let aiResult=null, aiTimer=null;
+let aiResult=null, aiTimer=null, botCfg=null;
 $("aiScanner").addEventListener("click",()=>{
   if(!Auth.session()){ openAuth("signup"); showToast("Sign in to use the AI Scanner."); return; }
   openOverlay("aiOverlay");
@@ -2134,11 +2199,11 @@ $("aiScanBtn").addEventListener("click",()=>{
       aiResult={m:best.m,a:best.a,contract};
       $("aiScanMkt").textContent="Scan complete";
       $("aiBestName").textContent=best.m.name;
-      $("aiBestSub").innerHTML=`Suggestion: <b class="up">${best.a.suggestion}</b> · Confidence <b>${best.a.confidence.toFixed(1)}%</b>`;
+      $("aiBestSub").innerHTML=`Best entry: <b class="up">${best.a.suggestion}</b> · <b>${best.a.confidence.toFixed(1)}%</b> win probability`;
       $("aiBestCard").classList.remove("hidden");
       $("aiStatusPill").classList.add("ok");
       $("aiStatusIcon").textContent="✓";
-      $("aiStatusText").textContent="Best entry: "+best.m.name;
+      $("aiStatusText").textContent="Best entry: "+best.m.name+" ("+best.a.confidence.toFixed(1)+"%)";
       $("aiLoadBtn").disabled=false;
       $("aiScanBtn").disabled=false;
     }
@@ -2151,25 +2216,57 @@ $("aiLoadBtn").addEventListener("click",()=>{
   if(TYPE_DEFS[cfg.type].barrier && aiResult.a.barrier!=null) cfg.barrier=aiResult.a.barrier;
   renderTypeUI(); renderMarketCard(); chart.draw(); updateDigitStrip();
   closeOverlay("aiOverlay");
-  armScannerBot();
+  const mult=payoutMult(cfg.type,aiResult.a.pred,cfg.barrier);
+  if(mult===null){ showToast("Invalid barrier — pick another digit."); return; }
+  botCfg={pred:aiResult.a.pred, mult, barrier:cfg.barrier, contract:aiResult.contract,
+          marketName:activeMarket.name, confidence:aiResult.a.confidence};
+  const bl=$("botLine");
+  bl.classList.add("on"); bl.classList.remove("running");
+  $("botStats").textContent=`ready · ${TYPE_DEFS[cfg.type].label} · ${botCfg.pred}${botCfg.barrier!=null?" "+botCfg.barrier:""} · ${botCfg.confidence.toFixed(1)}%`;
+  $("botStake").textContent=""; $("botPnl").textContent=""; $("botPnl").className="b-pnl";
+  $("botRun").classList.remove("hidden");
+  $("stopAuto").classList.add("hidden");
+  $("autoStatus").classList.add("hidden");
+  showToast("🤖 Bot loaded on "+activeMarket.name+" — press ▶ Run Bot when ready");
 });
-function armScannerBot(){
+$("botRun").addEventListener("click",()=>{
+  if(!botCfg || auto.running) return;
   const inputVal=parseFloat($("stakeInput").value)||10;
   const ticks=Math.max(1,Math.min(10,parseInt($("ticksInput").value)||5));
-  const mult=payoutMult(cfg.type,aiResult.a.pred,cfg.barrier);
-  if(mult===null){ showToast("Invalid barrier for bot — pick another digit."); return; }
-  const stake=cfg.stakeMode==="stake"?inputVal:inputVal/mult;
+  const stake=cfg.stakeMode==="stake"?inputVal:inputVal/botCfg.mult;
+  if(!isFinite(stake)||stake<1){ showToast("Minimum stake is $1."); return; }
   if(stake>Auth.activeBalance()){ showToast("Insufficient balance — deposit funds first."); return; }
-  auto={running:true,pred:aiResult.a.pred,baseStake:stake,curStake:stake,profit:0,loss:0,
+  auto={running:true,pred:botCfg.pred,baseStake:stake,curStake:stake,profit:0,loss:0,trades:0,wins:0,losses:0,staked:0,
         targetProfit:parseFloat($("targetProfit").value)||200,
         targetLoss:parseFloat($("targetLoss").value)||999,
-        lossMult:parseFloat($("lossMult").value)||2,ticks,mult,barrier:cfg.barrier};
+        lossMult:parseFloat($("lossMult").value)||2,ticks,mult:botCfg.mult,barrier:botCfg.barrier};
+  $("botRun").classList.add("hidden");
   $("stopAuto").classList.remove("hidden");
   $("autoStatus").classList.remove("hidden");
+  $("botLine").classList.add("running");
   renderBuyButtons();
-  placeTrade(auto.pred,auto.mult,auto.curStake,ticks);
+  placeTrade(auto.pred,auto.mult,auto.curStake,auto.ticks);
   updateAutoStatus();
-  $("aiBotActive").classList.add("on");
+  pushNotif("🤖","Bot Started","Deep Scanner Bot running on "+botCfg.marketName+" — "+botCfg.pred+(botCfg.barrier!=null?" "+botCfg.barrier:"")+" ("+botCfg.confidence.toFixed(1)+"%). Stops at target profit "+fmtMoney(auto.targetProfit)+".","info");
+});
+function updateBotLine(){
+  if(!botCfg) return;
+  if($("botLine").classList.contains("running")){
+    const p=auto.profit||0;
+    $("botStats").textContent=(auto.trades||0)+"t · "+(auto.wins||0)+"W/"+(auto.losses||0)+"L · target +"+fmtMoney(auto.targetProfit);
+    $("botStake").textContent=fmtMoney(auto.staked||0);
+    $("botPnl").textContent=(p>=0?"+":"−")+fmtMoney(Math.abs(p));
+    $("botPnl").className="b-pnl "+(p>=0?"up":"down");
+  }
+}
+function disarmScannerBot(){ /* bot line persists across screens */ }
+const _baseStopAuto=stopAuto;
+stopAuto=function(msg){
+  _baseStopAuto(msg);
+  $("botLine").classList.remove("running");
+  updateBotLine();
+  if(botCfg) $("botRun").classList.remove("hidden");
+};
   $("aiBotText").textContent=`Scanner Bot live — ${TYPE_DEFS[cfg.type].label} · ${auto.pred}${auto.barrier!=null?" "+auto.barrier:""} on ${activeMarket.name}`;
   pushNotif("🤖","Scanner Bot Armed","Deep Scanner Bot started on "+activeMarket.name+" ("+aiResult.a.suggestion+").","info");
 }
@@ -2179,67 +2276,146 @@ const _baseStopAuto=stopAuto;
 stopAuto=function(msg){ _baseStopAuto(msg); $("aiBotActive").classList.remove("on"); };
 
 /* ==================================================
-   DEPOSIT / WITHDRAW (with notifications)
+   DEPOSIT / WITHDRAW — M-Pesa · Card · Bank · USDT
+   Confirmations are SIMULATED for now (see notes). To go live,
+   replace the setTimeout in depConfirm with your payment API.
 ================================================== */
-let depMethod="M-Pesa";
+const PAY_DETAILS = {          /* ← EDIT: put YOUR real receiving details here */
+  mpesa: { paybill:"4136540", name:"TICKTRADER" },
+  bank:  { bank:"Equity Bank Kenya", name:"TICKTRADER LTD", acc:"3000123456789", branch:"Nairobi", swift:"EQBLKENA" },
+  usdt:  { addr:"TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", network:"TRC20 (Tron only)" }
+};
+let depMethod=null, depAmt=0, depTimer=null, depPending=false;
+
+function depShow(step){
+  $("depMethods").classList.toggle("hidden", step!=="methods");
+  $("depAmount").classList.toggle("hidden", step!=="amount");
+  $("depPay").classList.toggle("hidden", step!=="pay");
+}
 function openDeposit(){
+  depShow("methods");
   $("depTitle").textContent="Deposit Funds";
   $("depSub").textContent="Choose payment method";
-  $("depMethods").classList.remove("hidden");
-  $("depAmount").classList.add("hidden");
-  $("depError").textContent="";
+  $("depError").textContent=""; $("depError2").textContent="";
+  $("depState").className="dep-state"; $("depState").textContent="";
+  if(depTimer){ clearTimeout(depTimer); depTimer=null; } depPending=false;
   openOverlay("depositOverlay");
 }
-function openWithdraw(){ $("wdError").textContent=""; openOverlay("withdrawOverlay"); }
 document.querySelectorAll(".pay-item").forEach(b=>b.addEventListener("click",()=>{
   depMethod=b.dataset.method;
   $("depTitle").textContent="Deposit via "+depMethod;
   $("depSub").textContent="Enter amount (min $10)";
-  $("depMethods").classList.add("hidden");
-  $("depAmount").classList.remove("hidden");
+  depShow("amount");
 }));
-$("depBack").addEventListener("click",()=>{
-  $("depMethods").classList.remove("hidden");
-  $("depAmount").classList.add("hidden");
-  $("depTitle").textContent="Deposit Funds";
-  $("depSub").textContent="Choose payment method";
+$("depBack").addEventListener("click",()=>{ depShow("methods"); $("depTitle").textContent="Deposit Funds"; $("depSub").textContent="Choose payment method"; });
+$("depBack2").addEventListener("click",()=>{
+  if(depPending) return showToast("Wait for the current deposit to finish.");
+  if(depTimer){ clearTimeout(depTimer); depTimer=null; }
+  depShow("amount");
 });
 document.querySelectorAll("#depPresets button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#depPresets button").forEach(x=>x.classList.toggle("active",x===b));
   $("depInput").value=b.dataset.amt;
 }));
-$("depConfirm").addEventListener("click",()=>{
+$("depNext").addEventListener("click",()=>{
   $("depError").textContent="";
   const amt=parseFloat($("depInput").value);
   if(!isFinite(amt)||amt<10) return $("depError").textContent="Minimum deposit is $10.";
+  if(!Auth.session()){ closeOverlay("depositOverlay"); openAuth("signup"); return; }
+  depAmt=amt; buildDepPay(); depShow("pay");
+});
+function infoRow(k,v,copyable){
+  return `<div class="pi-row"><span class="k">${k}</span><span class="v">${esc(v)}</span>${copyable?`<button class="copy" data-copy="${esc(v)}">Copy</button>`:""}</div>`;
+}
+function buildDepPay(){
+  const d=PAY_DETAILS; let html="", label="", ph="";
+  if(depMethod==="M-Pesa"){
+    html=`<div style="font-weight:800;font-size:13px;margin-bottom:6px">📲 M-Pesa</div>`
+      + infoRow("Paybill", d.mpesa.paybill, true) + infoRow("Account name", d.mpesa.name)
+      + `<div class="pay-warn">We'll send an STK push to the phone number below — enter your M-Pesa PIN to approve.</div>`;
+    label="M-Pesa phone number"; ph="07XX XXX XXX or 2547XXXXXXXX";
+  } else if(depMethod==="Bank Transfer"){
+    html=`<div style="font-weight:800;font-size:13px;margin-bottom:6px">🏦 Bank Transfer</div>`
+      + infoRow("Bank", d.bank.bank) + infoRow("Account name", d.bank.name)
+      + infoRow("Account no.", d.bank.acc, true) + infoRow("Branch", d.bank.branch) + infoRow("SWIFT", d.bank.swift)
+      + `<div class="pay-warn">Transfer the exact amount, then paste the transaction reference / slip number below.</div>`;
+    label="Transaction reference / slip no."; ph="e.g. EQC1234567";
+  } else if(depMethod==="USDT"){
+    html=`<div style="font-weight:800;font-size:13px;margin-bottom:6px">₮ USDT — ${d.usdt.network}</div>`
+      + infoRow("Wallet address", d.usdt.addr, true)
+      + `<div class="pay-warn">⚠ Send USDT on ${d.usdt.network} ONLY — other networks will be lost. Paste your transaction hash (TXID) below.</div>`;
+    label="Transaction hash (TXID)"; ph="e.g. 9f3c…";
+  } else {
+    html=`<div style="font-weight:800;font-size:13px;margin-bottom:6px">💳 Card Payment</div><div class="pay-warn">Demo: card deposits credit instantly. A live gateway (Paystack / Stripe) plugs in here.</div>`;
+    label="Card last 4 digits (demo)"; ph="4242";
+  }
+  $("depInfo").innerHTML=html;
+  $("depFieldLabel").textContent=label;
+  $("depField").value=""; $("depField").placeholder=ph;
+  $("depInfo").querySelectorAll(".copy").forEach(c=>c.addEventListener("click",()=>{
+    navigator.clipboard?.writeText(c.dataset.copy); showToast("Copied ✓");
+  }));
+}
+$("depConfirm").addEventListener("click",()=>{
+  $("depError2").textContent="";
   const s=Auth.session();
   if(!s){ closeOverlay("depositOverlay"); openAuth("signup"); return; }
-  if(s.pureDemo) return $("depError").textContent="Demo accounts can't deposit — create a free account.";
-  if(s.isDemo){ Auth.switchMode(false); showToast("Switched to Real account for deposit"); }
-  Auth.updateBalance(Auth.activeBalance()+amt);
-  logTx("Deposit",amt,depMethod);
-  pushNotif("⬇","Deposit Received","+"+fmtMoney(amt)+" via "+depMethod+" has been credited to your account.","ok",true);
-  closeOverlay("depositOverlay");
-  renderBalance();
-  showToast("✅ "+fmtMoney(amt)+" deposited via "+depMethod);
+  const ref=$("depField").value.trim();
+  if(depMethod==="M-Pesa" && !/^(?:0|\+?254)?7\d{8}$/.test(ref.replace(/\s/g,"")))
+    return $("depError2").textContent="Enter a valid Safaricom number (07XX… / 2547XX…).";
+  if(depMethod!=="Card" && depMethod!=="M-Pesa" && ref.length<4)
+    return $("depError2").textContent="Enter the reference / TXID from your payment.";
+  if(s.isDemo){ Auth.switchMode(false); showToast("Switched to Real account for deposit"); renderBalance(); }
+  depPending=true;
+  $("depState").className="dep-state pending";
+  $("depState").textContent = depMethod==="M-Pesa" ? `📲 STK push sent to ${ref} — enter your M-Pesa PIN on your phone…`
+    : depMethod==="Card" ? `💳 Processing card payment…`
+    : `⏳ Verifying your ${depMethod==="Bank Transfer"?"transfer reference":"transaction on-chain"}…`;
+  const delay = depMethod==="Card" ? 2000 : depMethod==="M-Pesa" ? 5000 : 7000;
+  if(depTimer) clearTimeout(depTimer);
+  depTimer=setTimeout(()=>{
+    if(!depPending || !$("depositOverlay").classList.contains("open")) return;  /* cancelled */
+    depPending=false; depTimer=null;
+    Auth.updateBalance(Auth.activeBalance()+depAmt);
+    logTx("Deposit", depAmt, depMethod+(ref?" · "+ref:""));
+    pushNotif("⬇","Deposit Received","+"+fmtMoney(depAmt)+" via "+depMethod+" has been credited to your account.","ok",true);
+    $("depState").className="dep-state ok";
+    $("depState").textContent="✅ "+fmtMoney(depAmt)+" credited via "+depMethod+".";
+    renderBalance();
+    setTimeout(()=>{ if($("depositOverlay").classList.contains("open")) closeOverlay("depositOverlay"); },1600);
+  }, delay);
 });
+
+function openWithdraw(){
+  $("wdError").textContent=""; $("wdDest").value=""; wdDestLabel();
+  openOverlay("withdrawOverlay");
+}
+function wdDestLabel(){
+  const map={ "M-Pesa":["M-Pesa number","07XX XXX XXX or 2547XXXXXXXX"],
+    "Bank Transfer":["Bank account number","Account that receives the funds"],
+    "USDT (TRC20)":["TRC20 wallet address","T… wallet address"] };
+  const [l,p]=map[$("wdMethod").value]||["Destination",""];
+  $("wdDestLabel").textContent=l; $("wdDest").placeholder=p;
+}
+$("wdMethod").addEventListener("change",wdDestLabel);
 $("wdConfirm").addEventListener("click",()=>{
   $("wdError").textContent="";
   const amt=parseFloat($("wdInput").value);
   if(!isFinite(amt)||amt<10) return $("wdError").textContent="Minimum withdrawal is $10.";
+  const dest=$("wdDest").value.trim();
+  if(dest.length<4) return $("wdError").textContent="Enter the "+$("wdDestLabel").textContent.toLowerCase()+".";
   const s=Auth.session();
   if(!s){ closeOverlay("withdrawOverlay"); openAuth("signin"); return; }
-  if(s.pureDemo) return $("wdError").textContent="Demo accounts can't withdraw.";
-  if(s.isDemo){ Auth.switchMode(false); showToast("Switched to Real account for withdrawal"); }
+  if(s.isDemo){ Auth.switchMode(false); showToast("Switched to Real account for withdrawal"); renderBalance(); }
   if(amt>Auth.activeBalance()) return $("wdError").textContent="Insufficient real balance.";
   Auth.updateBalance(Auth.activeBalance()-amt);
-  logTx("Withdrawal",-amt,$("wdMethod").value);
-  pushNotif("⬆","Withdrawal Processed","−"+fmtMoney(amt)+" via "+$("wdMethod").value+" is on its way.","ok",true);
+  const m=$("wdMethod").value;
+  logTx("Withdrawal",-amt,m+" → "+dest);
+  pushNotif("⬆","Withdrawal Processed","−"+fmtMoney(amt)+" via "+m+" to "+dest+" is on its way.","ok",true);
   closeOverlay("withdrawOverlay");
   renderBalance();
-  showToast("✅ "+fmtMoney(amt)+" withdrawal submitted");
+  showToast("✅ "+fmtMoney(amt)+" withdrawal submitted via "+m);
 });
-
 /* ==================================================
    HUB + MINI MODALS
 ================================================== */
@@ -2311,7 +2487,13 @@ document.querySelectorAll("#authTabs .tab").forEach(t=>t.addEventListener("click
   $("authTitle").textContent=tab==="signin"?"Welcome to Ticktrader":"Create your account";
   $("authError").textContent="";
 }));
-function startDemo(){ Auth.startDemo(); afterAuth("Demo account ready — $10,000 virtual funds"); }
+function startDemo(){
+  const s=Auth.session();
+  if(!s){ openAuth("signup"); showToast("Create a free account first — the $10,000 demo is included."); return; }
+  Auth.switchMode(true);
+  renderBalance(); renderPositions();
+  showToast("Demo mode — $10,000 virtual funds");
+}
 $("demoBtn").addEventListener("click",startDemo);
 $("signinForm").addEventListener("submit",e=>{
   e.preventDefault();
