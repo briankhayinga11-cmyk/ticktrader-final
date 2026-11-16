@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -505,6 +504,8 @@
   .ai-body { padding:16px 18px 18px; }
   .ai-desc { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:12px 13px; font-size:11.5px; color:var(--muted); line-height:1.55; margin-bottom:14px; }
   .ai-desc b { color:var(--text); }
+  .ai-prompt { background:var(--panel); border:1px dashed rgba(109,93,241,0.5); border-radius:10px; padding:10px 12px; font-size:11px; color:#b3a7ff; line-height:1.5; margin-bottom:14px; font-family:monospace; word-break:break-word; }
+  .ai-prompt .pl { font-size:9.5px; letter-spacing:1.5px; color:var(--muted); font-weight:800; font-family:var(--font); display:block; margin-bottom:4px; }
   .ai-label { font-size:11px; color:var(--muted); font-weight:700; margin-bottom:6px; }
   .ai-select { position:relative; margin-bottom:14px; }
   .ai-select select { width:100%; appearance:none; background:var(--panel); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:12px 13px; font-size:13px; font-weight:600; outline:none; cursor:pointer; }
@@ -516,6 +517,10 @@
   .ai-best .bm-sub { font-size:12px; color:var(--muted); margin-top:2px; }
   .ai-best .bm-sub b { font-weight:700; }
   .ai-best .bm-sub b.up { color:var(--teal); }
+  .ai-metrics { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px; }
+  .ai-metrics div { background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:7px 4px; text-align:center; }
+  .ai-metrics b { display:block; font-size:12px; font-variant-numeric:tabular-nums; }
+  .ai-metrics span { font-size:9px; color:var(--muted); }
   .ai-scanline { display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px; }
   .ai-scanline .mkt { color:#b3a7ff; font-weight:700; }
   .ai-scanline .cnt { color:var(--muted); font-variant-numeric:tabular-nums; font-weight:600; }
@@ -523,6 +528,7 @@
   .ai-fill { height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg, var(--purple), var(--pink)); transition:width 0.35s ease; }
   .ai-status-pill { display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-size:12px; color:var(--muted); margin-bottom:14px; }
   .ai-status-pill.ok { border-color:rgba(23,199,164,0.45); background:var(--teal-dim); color:var(--teal); font-weight:600; }
+  .ai-status-pill .ok-badge { width:18px; height:18px; border-radius:50%; border:1.5px solid var(--teal); color:var(--teal); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
   .ai-btn-scan { width:100%; border:none; border-radius:10px; padding:13px; cursor:pointer; background:linear-gradient(135deg,#6d5df1,#4f6df5); color:#fff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 18px rgba(109,93,241,0.28); }
   .ai-btn-scan:hover { filter:brightness(1.12); transform:translateY(-1px); }
   .ai-btn-scan:disabled { opacity:0.7; cursor:not-allowed; filter:none; transform:none; }
@@ -635,7 +641,7 @@
 </style>
 </head>
 
-     <body>
+<body>
 
 <!-- ============================================================
      LANDING PAGE
@@ -652,27 +658,27 @@
       <a href="#reviews">Reviews</a>
     </div>
     <div class="land-actions">
-      <button class="icon-btn" id="themeBtn2" title="Toggle theme">🌙</button>
-      <button class="land-login" id="landLogin">Sign in</button>
-      <button class="land-cta" id="landCta">Get Started</button>
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
+      <button class="land-login" id="landLogin">Log in</button>
+      <button class="land-cta" id="landCta">Start free</button>
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="live-badge"><span class="live-dot"></span> LIVE MARKETS · 13 VOLATILITY INDICES</div>
-    <h1>Trade Smarter.<br><span class="grad">Profit Faster.</span></h1>
-    <p>Sub-second execution on 100+ global markets with payouts up to 950%. Powered by an AI entry scanner that only surfaces high-confidence setups.</p>
+  <section class="hero">
+    <div class="live-badge"><span class="live-dot"></span> Live markets · 24/7 trading</div>
+    <h1>Trade smarter.<br><span class="grad">Profit faster.</span></h1>
+    <p>Ticktrader gives you institutional-grade tools — sub-second execution, an AI scanner that only surfaces 98%+ strength entries, and payouts up to 950% on digit contracts. Start with $10,000 in virtual funds.</p>
     <div class="hero-btns">
-      <button class="btn-hero-primary" id="heroStart">Create Free Account</button>
-      <button class="btn-hero-ghost" id="heroDemo">▶ Try $10,000 Demo</button>
+      <button class="btn-hero-primary" id="heroStart">Create free account</button>
+      <button class="btn-hero-ghost" data-demo>▶ Try $10,000 demo</button>
     </div>
     <div class="hero-stats">
-      <div class="s"><b>950%</b><span>Max payout</span></div>
-      <div class="s"><b class="acc">&lt;1s</b><span>Execution</span></div>
-      <div class="s"><b>100+</b><span>Markets</span></div>
       <div class="s"><b class="acc">98%+</b><span>AI entry strength</span></div>
+      <div class="s"><b>0.04s</b><span>Avg execution</span></div>
+      <div class="s"><b>950%</b><span>Max payout</span></div>
+      <div class="s"><b>100+</b><span>Instruments</span></div>
     </div>
-  </header>
+  </section>
 
   <div class="ticker-band"><div class="ticker-track" id="tickerTrack"></div></div>
 
@@ -680,150 +686,199 @@
     <span class="sec-badge b-teal">WHY TICKTRADER</span>
     <h2>Everything you need to win</h2>
     <div class="feat-grid">
-      <div class="feat-card"><div class="f-ico" style="background:var(--teal-dim);color:var(--teal)">⚡</div><h3>Sub-second execution</h3><p>Orders placed in under a second with tick-level pricing on every volatility index.</p></div>
-      <div class="feat-card"><div class="f-ico" style="background:rgba(109,93,241,0.18);color:#a99bff">✨</div><h3>AI Entry Scanner</h3><p>Scans all 13 markets across 4 statistical signals and returns only 98%+ strength entries.</p></div>
-      <div class="feat-card"><div class="f-ico" style="background:rgba(245,196,81,0.15);color:var(--gold)">🤖</div><h3>Auto-trading bot</h3><p>Set take profit, stop loss and martingale multiplier — the bot trades and banks your target.</p></div>
-      <div class="feat-card"><div class="f-ico" style="background:var(--red-dim);color:var(--red)">🔒</div><h3>Bank-grade security</h3><p>2FA, KYC verification and instant alerts on every login, deposit and withdrawal.</p></div>
+      <div class="feat-card">
+        <div class="f-ico" style="background:var(--teal-dim);color:var(--teal)">⚡</div>
+        <h3>Sub-second execution</h3>
+        <p>Orders route in milliseconds. Even/Odd, Matches and Over/Under contracts settle tick-by-tick with live payout math.</p>
+      </div>
+      <div class="feat-card">
+        <div class="f-ico" style="background:rgba(109,93,241,0.18);color:#a99bff">🤖</div>
+        <h3>AI Entry Scanner</h3>
+        <p>Deep-scans 13 instruments across 1s–1h timeframes and only surfaces entries at 98%+ strength — a different instrument every run.</p>
+      </div>
+      <div class="feat-card">
+        <div class="f-ico" style="background:rgba(245,196,81,0.15);color:var(--gold)">📱</div>
+        <h3>Built for mobile</h3>
+        <p>A terminal that fits your thumb: bottom navigation, a positions sheet with Won/Lost filters, and one-tap trading.</p>
+      </div>
+      <div class="feat-card">
+        <div class="f-ico" style="background:var(--red-dim);color:var(--red)">🔒</div>
+        <h3>Bank-grade security</h3>
+        <p>TOTP two-factor authentication, KYC verification and encrypted sessions keep your account locked down.</p>
+      </div>
     </div>
   </section>
 
   <section class="land-section" id="how">
-    <span class="sec-badge b-purple">GET STARTED</span>
-    <h2>Three steps to your first trade</h2>
+    <span class="sec-badge b-purple">HOW IT WORKS</span>
+    <h2>Start trading in 3 steps</h2>
     <div class="steps-row">
-      <div class="step-card"><div class="step-num">01</div><h3>📱 Create account</h3><p>Sign up free in 30 seconds and get a $10,000 demo balance instantly.</p></div>
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="f-ico" style="background:var(--teal-dim);color:var(--teal)">👤</div>
+        <h3>Create your free account</h3>
+        <p>Sign up in 30 seconds and instantly get a $10,000 demo balance — no card required.</p>
+      </div>
       <div class="step-arrow">→</div>
-      <div class="step-card"><div class="step-num">02</div><h3>✨ Run the AI Scanner</h3><p>Let the scanner find the strongest market and entry — 98%+ confidence only.</p></div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="f-ico" style="background:rgba(109,93,241,0.18);color:#a99bff">🤖</div>
+        <h3>Practice with the AI bot</h3>
+        <p>Run the AI Scanner, load the bot and watch it manage stakes until your target profit hits.</p>
+      </div>
       <div class="step-arrow">→</div>
-      <div class="step-card"><div class="step-num">03</div><h3>💰 Trade & withdraw</h3><p>Deposit via M-Pesa, Bank or USDT and withdraw your profits any time.</p></div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="f-ico" style="background:rgba(245,196,81,0.15);color:var(--gold)">🚀</div>
+        <h3>Deposit & go live</h3>
+        <p>Fund via M-Pesa, bank transfer or USDT TRC20 and switch to your real account in one tap.</p>
+      </div>
     </div>
   </section>
 
   <section class="land-section" id="markets">
+    <span class="sec-badge b-gold">MARKETS</span>
     <div class="mk-grid">
       <div class="mk-left">
-        <span class="sec-badge b-gold">LIVE MARKETS</span>
-        <h2>Trade BTC and 13 volatility indices</h2>
-        <p class="mk-p">24/7 synthetic indices with constant volatility — weekends included. Digit trades settle every few seconds.</p>
+        <h2>100+ instruments. One terminal.</h2>
+        <p class="mk-p">From 1-second volatility ticks to hourly crypto moves — trade the instrument and timeframe that fits your strategy.</p>
         <div class="mk-list">
-          <div class="mk-item"><div class="mi-ico">📈</div><div><b>Volatility 10, 25, 50, 75, 100</b><span>1s & 5s ticks — even/odd, over/under, matches</span></div></div>
-          <div class="mk-item"><div class="mi-ico">🪙</div><div><b>Crypto & FX</b><span>BTC, ETH, majors with tight spreads</span></div></div>
-          <div class="mk-item"><div class="mi-ico">🌙</div><div><b>Weekend markets</b><span>Trade when traditional markets are closed</span></div></div>
+          <div class="mk-item"><div class="mi-ico">📈</div><div><b>Volatility indices</b><span>V10–V100 with 1s tick versions for scalpers</span></div></div>
+          <div class="mk-item"><div class="mi-ico">₿</div><div><b>Crypto & forex majors</b><span>BTC, ETH and major pairs quoted live</span></div></div>
+          <div class="mk-item"><div class="mi-ico">🎯</div><div><b>Digit contracts</b><span>Even/Odd, Matches/Differs, Over/Under — payouts up to 950%</span></div></div>
         </div>
       </div>
       <div class="mk-card">
         <div class="mk-head">
           <div class="mk-ico">₿</div>
           <div class="mk-sym">BTC/USD</div>
-          <div class="mk-right"><b id="mkPrice">64,250.00</b><span class="chg up" id="mkChg">+2.4%</span></div>
+          <div class="mk-right"><b id="mkPrice">—</b><span class="chg up" id="mkChg">0.00%</span></div>
         </div>
         <canvas id="mkChart"></canvas>
         <div class="mk-btns">
-          <button class="mk-up" id="mkUp">▲ Buy <span>· demo</span></button>
-          <button class="mk-down" id="mkDown">▼ Sell <span>· demo</span></button>
+          <button class="mk-up" id="mkUp">▲ Up <span>95.22%</span></button>
+          <button class="mk-down" id="mkDown">▼ Down <span>95.22%</span></button>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="stats-band">
+  <div class="stats-band">
     <div class="inner">
-      <div class="sb-item"><div class="sb-ico">👥</div><b>52K+</b><span>Active traders</span></div>
-      <div class="sb-item"><div class="sb-ico">💸</div><b>$18M+</b><span>Paid out</span></div>
-      <div class="sb-item"><div class="sb-ico">⚡</div><b>0.8s</b><span>Avg execution</span></div>
-      <div class="sb-item"><div class="sb-ico">🌍</div><b>24/7</b><span>Markets open</span></div>
+      <div class="sb-item"><div class="sb-ico">💰</div><b>$2.1B+</b><span>Monthly volume</span></div>
+      <div class="sb-item"><div class="sb-ico">🌍</div><b>190+</b><span>Countries served</span></div>
+      <div class="sb-item"><div class="sb-ico">⚡</div><b>99.99%</b><span>Platform uptime</span></div>
+      <div class="sb-item"><div class="sb-ico">🕐</div><b>24/7</b><span>Human support</span></div>
     </div>
-  </section>
+  </div>
 
   <section class="land-section" id="reviews">
     <span class="sec-badge b-teal">TRADER REVIEWS</span>
-    <h2>Loved by traders across Kenya</h2>
+    <h2>Loved by traders worldwide</h2>
     <div class="testi-grid">
-      <div class="testi-card"><div class="stars">★★★★★</div><q>The AI scanner is unreal. It loads the bot, hits take profit, and the win popup shows my stats. M-Pesa deposits land in seconds.</q><div class="testi-who"><div class="av">BK</div><div><b>Brian K.</b><span>Nairobi · 3 months</span></div></div></div>
-      <div class="testi-card"><div class="stars">★★★★★</div><q>Withdrawals to M-Pesa are fast and the 2FA gives me peace of mind. The bot's stop-loss multiplier saved me twice.</q><div class="testi-who"><div class="av">AM</div><div><b>Amina M.</b><span>Mombasa · 5 months</span></div></div></div>
-      <div class="testi-card"><div class="stars">★★★★★</div><q>I deposit with USDT from Binance and the copy button makes it painless. Digit rings on the chart are addictive.</q><div class="testi-who"><div class="av">JO</div><div><b>Kevin O.</b><span>Kisumu · 2 months</span></div></div></div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <q>The AI Scanner is unreal. It rotated me onto VDAX on the 15m, loaded the bot, and the target-profit popup hit in 11 minutes.</q>
+        <div class="testi-who"><div class="av">BK</div><div><b>Brian K.</b><span>Nairobi, Kenya</span></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <q>M-Pesa deposits land instantly and the positions sheet with Won/Lost filters is exactly what I needed on my phone.</q>
+        <div class="testi-who"><div class="av">AM</div><div><b>Amina M.</b><span>Mombasa, Kenya</span></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <q>Switching between demo and real with one tap helped me build confidence before risking a shilling. Best onboarding ever.</q>
+        <div class="testi-who"><div class="av">JO</div><div><b>James O.</b><span>Kisumu, Kenya</span></div></div>
+      </div>
     </div>
-    <div class="testi-rating">Rated <b>4.8/5</b> from 2,300+ reviews</div>
+    <div class="testi-rating">Rated <b>4.8/5</b> from 12,400+ verified reviews</div>
   </section>
 
   <section class="land-section">
     <div class="cta-card">
       <h2>Ready to trade smarter?</h2>
-      <p>Join 52,000+ traders. Free demo, instant M-Pesa deposits, and an AI scanner that only shows you the best entries.</p>
+      <p>Join thousands of traders using AI-scored entries and one-tap digit contracts. Start with the demo — upgrade to real whenever you're ready.</p>
       <div class="hero-btns">
-        <button class="btn-hero-primary" id="ctaStart">Create Free Account</button>
-        <button class="btn-hero-ghost" id="ctaDemo">▶ Try Demo</button>
+        <button class="btn-hero-primary" id="ctaStart">Create free account</button>
+        <button class="btn-hero-ghost" data-demo>▶ Try the demo</button>
       </div>
     </div>
   </section>
 
   <footer class="land-foot">
-    <div class="foot-copy">© 2026 Ticktrader. All rights reserved.<br>Trading involves risk. Demo accounts use virtual funds.</div>
+    <div class="foot-copy">© 2026 Ticktrader. All rights reserved.<br>Risk warning: digit contracts carry a high level of risk and may not suit all investors. Practice with demo funds first.</div>
     <div class="foot-links">
-      <a id="footTerms">Terms</a><a id="footPrivacy">Privacy</a><a id="footRisk">Risk Disclosure</a><a id="footContact">Contact</a>
+      <a id="footTerms">Terms</a>
+      <a id="footPrivacy">Privacy</a>
+      <a id="footRisk">Risk Disclosure</a>
+      <a id="footContact">Contact</a>
     </div>
   </footer>
 </div>
 
 <!-- ============================================================
-     APP SHELL (terminal) — hidden until signed in
+     APP SHELL — TOPBAR
 ============================================================ -->
 <div id="appShell" class="hidden">
-
-  <header class="topbar">
+  <div class="topbar">
     <div class="tb-left">
       <div class="brand-pill"><div class="logo-badge">T</div>Ticktrader</div>
       <nav class="tb-nav">
         <button data-nav="hub">◎ My Hub</button>
-        <button data-nav="deposit">⬇ Deposit</button>
-        <button data-nav="withdraw">⬆ Withdraw</button>
+        <button data-nav="deposit">⬆ Deposit</button>
+        <button data-nav="withdraw">⬇ Withdraw</button>
         <button data-nav="history">↺ History</button>
         <button data-nav="chat">💬 Support</button>
       </nav>
     </div>
     <div class="tb-right">
-      <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
-      <button class="balance-chip" id="balanceChip">Ⓡ $0.00 ▾</button>
+      <button class="icon-btn" id="themeBtn2" title="Toggle theme">🌙</button>
+      <div class="balance-chip" id="balanceChip">Ⓓ $10,000.00 ▾</div>
       <button class="btn-deposit" data-nav="deposit">Deposit</button>
-      <button class="icon-btn" id="bellBtn" title="Notifications">🔔<span class="dot hidden" id="bellDot"></span></button>
+      <button class="icon-btn" id="bellBtn">🔔<span class="dot hidden" id="bellDot"></span></button>
       <button class="avatar-btn" id="avatarBtn">👤</button>
     </div>
-  </header>
+  </div>
 
-  <!-- Account switcher -->
+  <!-- Account switcher + profile menus (positioned panels) -->
   <div class="acct-menu hidden" id="acctMenu">
-    <button class="acct-item active" data-acct="real">
-      <span class="a-ico real">R</span>
-      <span><span class="a-name">Real</span><br><span class="a-bal" id="acctRealBal">$0.00</span></span>
-      <span class="a-dot" id="realDot"></span>
+    <button class="acct-item active" data-acct="demo">
+      <div class="a-ico demo">Ⓓ</div>
+      <div><div class="a-name">Demo</div><div class="a-bal">$10,000.00 virtual</div></div>
+      <div class="a-dot" id="demoDot"></div>
     </button>
-    <button class="acct-item" data-acct="demo">
-      <span class="a-ico demo">D</span>
-      <span><span class="a-name">Demo</span><br><span class="a-bal">$10,000.00</span></span>
-      <span class="a-dot hidden" id="demoDot"></span>
+    <button class="acct-item" data-acct="real">
+      <div class="a-ico real">Ⓡ</div>
+      <div><div class="a-name">Real</div><div class="a-bal" id="acctRealBal">$0.00</div></div>
+      <div class="a-dot hidden" id="realDot"></div>
     </button>
   </div>
 
-  <!-- Profile menu -->
   <div class="profile-menu hidden" id="profileMenu">
     <div class="pm-head"><div class="name" id="pmName">—</div><div class="email" id="pmEmail">—</div></div>
-    <button class="pm-item" data-pm="profile">⚙ Profile & Security</button>
+    <button class="pm-item" data-pm="profile">⚙ Settings</button>
     <button class="pm-item" data-pm="hub">◎ My Hub</button>
-    <button class="pm-item" data-pm="deposit">⬇ Deposit</button>
-    <button class="pm-item" data-pm="withdraw">⬆ Withdraw</button>
-    <button class="pm-item danger" data-pm="signout">⏻ Sign Out</button>
+    <button class="pm-item" data-pm="deposit">⬆ Deposit</button>
+    <button class="pm-item" data-pm="withdraw">⬇ Withdraw</button>
+    <button class="pm-item danger" data-pm="signout">⏻ Sign out</button>
   </div>
 
-  <!-- Contract tabs -->
+  <!-- ============================================================
+       CONTRACT TABS
+  ============================================================ -->
   <div class="contract-bar">
-    <button class="ctab" data-type="matchdiff">◎ Matches/Differs</button>
-    <button class="ctab active" data-type="evenodd">▦ Even/Odd</button>
-    <button class="ctab" data-type="overunder">⇅ Over/Under</button>
+    <button class="ctab active" data-type="evenodd">⚡ Even / Odd</button>
+    <button class="ctab" data-type="matchdiff">🎯 Matches / Differs</button>
+    <button class="ctab" data-type="overunder">📊 Over / Under</button>
   </div>
 
-  <main class="terminal">
+  <!-- ============================================================
+       TERMINAL — 3 COLUMNS
+  ============================================================ -->
+  <div class="terminal">
 
-    <!-- ===== POSITIONS (sheet) ===== -->
+    <!-- LEFT: POSITIONS (sheet on mobile) -->
     <aside class="positions" id="positions">
       <div class="sheet-head">
         <div class="sheet-handle"></div>
@@ -834,93 +889,103 @@
             <button class="sf-btn" data-filter="won">Won</button>
             <button class="sf-btn" data-filter="lost">Lost</button>
           </div>
-          <button class="sheet-close" id="sheetClose" title="Close">✕</button>
+          <button class="sheet-close" id="sheetClose">✕</button>
         </div>
       </div>
       <div class="pos-tabs">
         <button class="pos-tab active" data-tab="open">Open <span id="openCount">0</span></button>
         <button class="pos-tab" data-tab="closed">Closed <span id="closedCount">0</span></button>
-        <button class="pos-tab" data-tab="tx">History</button>
+        <button class="pos-tab" data-tab="tx">Transactions</button>
       </div>
       <div class="pos-body" id="posBody"></div>
       <div class="pos-footer" id="posFooter">0 open positions</div>
     </aside>
 
-    <!-- ===== CHART ===== -->
-    <section class="chart-area">
+    <!-- CENTER: CHART -->
+    <div class="chart-area">
       <canvas id="chartCanvas"></canvas>
-
-      <div class="chart-toolbar">
-        <button id="modeLine" class="active" title="Line">╱</button>
-        <button id="modeCandle" title="Candles">▮▮</button>
-        <button id="zoomIn" title="Zoom in">＋</button>
-        <button id="zoomOut" title="Zoom out">−</button>
-        <button id="dlChart" title="Download chart">⤓</button>
-      </div>
-
       <div class="market-card" id="marketCard">
-        <span class="name" id="mcName">Volatility 10 ▾</span>
+        <span class="name" id="mcName">Vol 10 (1s) ▾</span>
         <span class="pr" id="mcPrice">—</span>
         <span class="chg up" id="mcChg">0.00%</span>
       </div>
       <div class="market-menu hidden" id="marketMenu"></div>
-
-      <button class="zoom-chip" id="zoomChip">100%</button>
-      <button class="plus-btn" id="plusBtn">＋</button>
-
+      <div class="chart-toolbar">
+        <button id="modeLine" class="active" title="Line chart">╱</button>
+        <button id="modeCandle" title="Candles">▮</button>
+        <button id="zoomIn" title="Zoom in">+</button>
+        <button id="zoomOut" title="Zoom out">−</button>
+        <button id="dlChart" title="Download chart">⤓</button>
+      </div>
+      <div class="zoom-chip" id="zoomChip">100%</div>
+      <button class="plus-btn" id="plusBtn" title="More tools">+</button>
       <div class="digit-strip" id="digitStrip"></div>
-    </section>
+    </div>
 
-    <!-- ===== TRADE PANEL ===== -->
+    <!-- RIGHT: TRADE PANEL -->
     <aside class="trade-panel">
+      <button class="learn-link" id="learnBtn">📖 How do these trades work?</button>
+      <div class="learn-box hidden" id="learnBox"></div>
+
+      <div class="mode-label"><span>Trading mode</span></div>
       <div class="seg" id="modeSeg">
-        <button data-mode="auto">● AUTO</button>
-        <button data-mode="manual" class="active">● MANUAL</button>
+        <button class="active" data-mode="manual">Manual</button>
+        <button data-mode="auto">Auto (Bot)</button>
       </div>
 
-      <div class="stake-row">
-        <button class="step-btn" id="stakeMinus">−</button>
-        <div class="stake-input"><span>$</span><input id="stakeInput" type="number" value="10" min="1" step="1" /></div>
-        <button class="step-btn" id="stakePlus">＋</button>
-        <button class="ai-btn" id="aiScanner">✨ AI Scanner<br><small>Find best market</small></button>
-      </div>
-      <div class="stake-hint" id="stakeHint"></div>
-
-      <div class="tp-row">
-        <div class="tp-cell tp"><label>TAKE PROFIT</label><div class="in"><span>$</span><input id="targetProfit" type="number" value="200" min="1" /></div></div>
-        <div class="tp-cell sl"><label>STOP LOSS</label><div class="in"><span>$</span><input id="targetLoss" type="number" value="999" min="1" /></div></div>
-        <div class="tp-cell mu"><label>MULTIPLIER</label><div class="in"><span>×</span><input id="lossMult" type="number" value="2" min="1" step="0.1" /></div></div>
+      <div class="field-row" style="margin-top:14px">
+        <label>AI assistant</label>
+        <button class="ai-btn" id="aiScanner">✨ AI Scanner<br><small>98%+ entries · rotates instruments</small></button>
       </div>
 
-      <div class="digit-row hidden" id="barrierRow"></div>
-
-      <div class="mode-label"><span>Amount type</span><span id="digitsHint"></span></div>
+      <div class="mode-label"><span>Stake type</span></div>
       <div class="seg" id="stakeModeSeg">
-        <button data-sm="stake" class="active">Stake</button>
+        <button class="active" data-sm="stake">Stake</button>
         <button data-sm="payout">Payout</button>
       </div>
 
-      <div class="field-row"><label>⏱ Duration (ticks)</label><input id="ticksInput" type="number" value="5" min="1" max="10" /></div>
-
-      <div class="bot-line" id="botLine">
-        <span class="b-dot"></span><span class="b-name">Bot</span>
-        <span class="b-stats" id="botStats"></span>
-        <span class="b-right"><span class="b-stake" id="botStake"></span><span class="b-pnl" id="botPnl"></span></span>
+      <div class="field-row">
+        <label>Ticks</label>
+        <input id="ticksInput" type="number" value="5" min="1" max="10" />
       </div>
-      <button class="bot-run hidden" id="botRun">▶ Run Bot</button>
 
-      <div class="payout-line"><span>Payout</span><b id="payoutAmt">19.52 USD</b></div>
+      <div class="digit-row hidden" id="barrierRow"></div>
+      <div class="stake-hint" id="digitsHint" style="text-align:left"></div>
+
+      <div class="mode-label"><span>Stake</span></div>
+      <div class="stake-row">
+        <button class="step-btn" id="stakeMinus">−</button>
+        <div class="stake-input"><span>USD</span><input id="stakeInput" type="number" value="10" min="1" /></div>
+        <button class="step-btn" id="stakePlus">+</button>
+      </div>
+
+      <div class="tp-row">
+        <div class="tp-cell tp"><label>TAKE PROFIT $</label><div class="in"><input id="targetProfit" type="number" value="200" disabled /></div></div>
+        <div class="tp-cell sl"><label>STOP LOSS $</label><div class="in"><input id="targetLoss" type="number" value="999" disabled /></div></div>
+        <div class="tp-cell mu"><label>LOSS MULT ×</label><div class="in"><input id="lossMult" type="number" value="2" step="0.1" disabled /></div></div>
+      </div>
+
+      <div class="payout-line"><span>Payout</span><b id="payoutAmt">—</b></div>
+      <div class="stake-hint" id="stakeHint">Sign in to trade</div>
+
       <div class="big-buys" id="buyButtons"></div>
-      <button class="stop-auto hidden" id="stopAuto">■ STOP</button>
+
+      <div class="bot-line">
+        <div class="b-dot"></div>
+        <span class="b-name">AI BOT</span>
+        <span class="b-stats" id="botStats">Not armed — open the AI Scanner</span>
+        <div class="b-right"><span class="b-stake" id="botStake"></span><span class="b-pnl" id="botPnl"></span></div>
+      </div>
+
+      <button class="bot-run hidden" id="botRun">▶ Run Bot</button>
+      <button class="stop-auto hidden" id="stopAuto">■ STOP AUTO-TRADING</button>
       <div class="auto-status hidden" id="autoStatus"></div>
-
-      <button class="learn-link" id="learnBtn" style="margin-top:10px">ⓘ Learn about this trade type</button>
-      <div class="learn-box hidden" id="learnBox"></div>
     </aside>
-  </main>
+  </div>
 
+  <!-- BOTTOM NAV (mobile) -->
   <nav class="bottom-nav">
-    <button id="bnTrade" class="active">▮▮ Trade</button>
+    <button id="bnTrade" class="active">📈 Trade</button>
     <button id="bnPositions">◷ Positions</button>
   </nav>
 </div>
@@ -936,36 +1001,33 @@
     </div>
     <div class="modal-body">
       <div class="modal-tabs">
-        <button class="tab active" id="authTabSignup">Sign Up</button>
-        <button class="tab" id="authTabSignin">Sign In</button>
+        <button class="tab active" id="authTabSignup">Sign up</button>
+        <button class="tab" id="authTabSignin">Log in</button>
       </div>
 
       <form class="auth-form" id="signupForm">
         <div class="field"><label>Full name</label><input id="suName" type="text" placeholder="Jane Wanjiku" autocomplete="name" /></div>
         <div class="field"><label>Email</label><input id="suEmail" type="email" placeholder="you@email.com" autocomplete="email" /></div>
-        <div class="field"><label>Password</label><input id="suPass" type="password" placeholder="••••••••" autocomplete="new-password" /></div>
-        <div class="sp-req"><b>Password must contain:</b>
-          <ul class="checks"><li>At least 8 characters</li><li>An uppercase letter</li><li>A lowercase letter</li><li>A number</li></ul>
-        </div>
+        <div class="field"><label>Password</label><input id="suPass" type="password" placeholder="Min 8 chars · Aa · 123" autocomplete="new-password" /></div>
         <div class="modal-error" id="authError"></div>
-        <button class="btn-primary" id="suBtn" type="submit">Create Account</button>
+        <button class="btn-primary" type="submit">Create account & claim $10,000 demo</button>
       </form>
 
       <form class="auth-form hidden" id="signinForm">
         <div class="field"><label>Email</label><input id="siEmail" type="email" placeholder="you@email.com" autocomplete="email" /></div>
-        <div class="field"><label>Password</label><input id="siPass" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+        <div class="field"><label>Password</label><input id="siPass" type="password" placeholder="Your password" autocomplete="current-password" /></div>
         <div class="modal-error" id="siError"></div>
-        <button class="btn-primary" id="siBtn" type="submit">Sign In</button>
+        <button class="btn-primary" type="submit">Log in</button>
       </form>
 
-      <div class="modal-divider">OR</div>
-      <button class="btn-ghost" id="demoTry">🎮 Continue with Demo Account</button>
-      <div class="modal-note">Demo accounts get $10,000 in virtual funds. No credit card required.<br><span id="authSwitch" style="color:var(--teal);cursor:pointer">Already have an account? Sign in</span></div>
+      <div class="modal-divider">or</div>
+      <button class="btn-ghost" id="ctaDemo" data-demo type="button">▶ Try demo — free account required</button>
+      <div class="modal-note"><span id="authSwitchLabel">Already have an account?</span> <a id="authSwitch" style="color:var(--teal);cursor:pointer;font-weight:700">Log in</a></div>
     </div>
   </div>
 </div>
 
-<!-- Part 3 continues here (deposit, withdraw, settings, AI scanner, win popup, chat…) -->
+<!-- Part 3 (modals & panels) continues here -->
 
 <!-- ============================================================
      NOTIFICATIONS PANEL
@@ -1022,7 +1084,7 @@
           <div class="sp-req"><b>Send USDT (TRC20) to:</b>
             <div class="big-input" style="margin-top:8px">
               <input id="usdtAddress" readonly value="TNtYpjy2ithjgioNrLCSkGHeyrkbaPsxi7" style="font-size:12.5px;font-weight:700;text-align:left;font-family:monospace" />
-              <button class="eye" id="copyUsdt" title="Copy address" style="font-size:15px">⧉</button>
+              <button class="copy-btn" id="copyUsdt" title="Copy address" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:15px;padding:6px;flex-shrink:0">⧉</button>
             </div>
             <div class="sp-note" style="margin-top:8px">⚠ Network must be <b>TRC20 (Tron)</b> — sending on ERC20/BEP20 will lose funds. Minimum deposit: $10.</div>
           </div>
@@ -1233,7 +1295,7 @@
 </div>
 
 <!-- ============================================================
-     AI ENTRY SCANNER — 98%+ STRENGTH
+     AI ENTRY SCANNER — ROTATING INSTRUMENTS + 98% FLOOR
 ============================================================ -->
 <div class="overlay ai-overlay" id="aiOverlay">
   <div class="modal ai-modal">
@@ -1244,6 +1306,8 @@
     </div>
     <div class="ai-body">
       <div class="ai-desc" id="aiDesc"></div>
+      <div class="ai-prompt"><span class="pl">AI PROMPT (AUTO-GENERATED EACH RUN)</span><span id="aiPromptText">Press Deep Scan to build the prompt…</span></div>
+
       <div class="ai-label">CONTRACT TYPE</div>
       <div class="ai-select">
         <select id="aiContract">
@@ -1253,12 +1317,12 @@
         </select>
       </div>
 
-      <div class="ai-scanline"><span class="mkt" id="aiScanMkt">Ready to scan</span><span class="cnt" id="aiScanCnt">0/13</span></div>
+      <div class="ai-scanline"><span class="mkt" id="aiScanMkt">Ready to scan</span><span class="cnt" id="aiScanCnt">Ready</span></div>
       <div class="ai-track"><div class="ai-fill" id="aiFill"></div></div>
 
       <div class="ai-status-pill" id="aiStatusPill">
         <span class="ok-badge" id="aiStatusIcon">◌</span>
-        <span id="aiStatusText">Scans all 13 markets · returns only 98%+ entries</span>
+        <span id="aiStatusText">Rotates 13 instruments × 5 timeframes · returns only 98%+ entries</span>
       </div>
 
       <div class="ai-best hidden" id="aiBestCard">
@@ -1269,7 +1333,7 @@
 
       <button class="ai-btn-scan" id="aiScanBtn">✨ Deep Scan All Markets</button>
       <button class="ai-btn-load" id="aiLoadBtn" disabled>🤖 Load Bot Settings</button>
-      <div class="ai-note">Only entries with <b class="up">≥ 98% entry strength</b> are surfaced.<br>The scanner loads the bot — you press ▶ Run Bot to start.</div>
+      <div class="ai-note">A <b class="up">different instrument + timeframe</b> is analyzed every run (no repeats within 3 scans).<br>Only <b class="up">≥ 98% entry strength</b> is surfaced — the scanner loads the bot, you press ▶ Run Bot.</div>
     </div>
   </div>
 </div>
@@ -1448,15 +1512,7 @@ const Auth=(()=>{
       if(u.meta&&u.meta.twoFA) return {need2FA:true,user:u};
       return {user:u};
     },
-    demoLogin(){
-      let u=findByEmail("demo@ticktrader.local");
-      if(!u){
-        u={name:"Demo Trader",email:"demo@ticktrader.local",pass:hash("demo-demo"),
-           balance:0,demoBalance:10000,pureDemo:true,meta:{twoFA:false,kyc:"none"},created:Date.now()};
-        writeUser(u);
-      }
-      return u;
-    },
+   
     activeBalance(){ return session?(session.isDemo?session.demoBalance:session.balance):0; },
     updateBalance(v){
       const u=currentUser(); if(!u) return;
@@ -2052,6 +2108,8 @@ function openAuth(mode){
   $("authTabSignin").classList.toggle("active",!signup);
   $("authTitle").textContent=signup?"Create your account":"Welcome back";
   $("authSub").textContent=signup?"Free · 30 seconds · $10,000 demo included":"Sign in to continue trading";
+  $("authSwitchLabel").textContent=signup?"Already have an account?":"New to Ticktrader?";
+  $("authSwitch").textContent=signup?"Log in":"Sign up";
   openOverlay("authOverlay");
 }
 $("authTabSignup").addEventListener("click",()=>openAuth("signup"));
@@ -2088,13 +2146,17 @@ $("signinForm").addEventListener("submit",e=>{
 });
 
 function demoLogin(){
-  const u=Auth.demoLogin();
-  Auth.commitSession(u);
-  afterAuth("Demo account ready — $10,000 virtual funds.");
+  /* Account required — even for the demo */
+  if(!Auth.session()){
+    openAuth("signup");
+    showToast("Account required — sign up or log in to access the $10,000 demo.");
+    return;
+  }
+  Auth.switchMode(true);
+  afterAuth("Demo mode — $10,000 virtual funds.");
 }
-$("demoTry").addEventListener("click",demoLogin);
-$("heroDemo").addEventListener("click",demoLogin);
-$("ctaDemo").addEventListener("click",demoLogin);
+/* All demo buttons share data-demo (hero, CTA section, auth modal) */
+document.querySelectorAll("[data-demo]").forEach(b=>b.addEventListener("click",demoLogin));
 
 $("landCta").addEventListener("click",()=>openAuth("signup"));
 $("heroStart").addEventListener("click",()=>openAuth("signup"));
@@ -2299,11 +2361,59 @@ $("dlChart").addEventListener("click",()=>{
 });
 
 /* ==================================================
-   AI ENTRY SCANNER — 98% CONFIDENCE FLOOR
-   Multi-signal statistical engine: recency-weighted
-   frequency + momentum streaks + parity-carry analysis
-   across all 13 markets. Only 98%+ entries surface.
+   AI ENTRY SCANNER — 98% FLOOR + INSTRUMENT ROTATION
+   Every run analyzes a DIFFERENT instrument on a random
+   timeframe, driven by a dynamic prompt template.
+   Diversity rule: no instrument repeats within 3 runs.
 ================================================== */
+
+/* --- Instrument universe (13 instruments, rotated) --- */
+const AI_INSTRUMENTS=[
+  {sym:"V10 (1s)",  name:"Volatility 10 (1s) Index",    marketId:"V10s"},
+  {sym:"V25 (1s)",  name:"Volatility 25 (1s) Index",    marketId:"V25s"},
+  {sym:"V50 (1s)",  name:"Volatility 50 (1s) Index",    marketId:"V50s"},
+  {sym:"V75 (1s)",  name:"Volatility 75 (1s) Index",    marketId:"V75s"},
+  {sym:"V100 (1s)", name:"Volatility 100 (1s) Index",   marketId:"V100s"},
+  {sym:"VIX",       name:"CBOE Volatility Index",       marketId:"V75"},
+  {sym:"VXT",       name:"CBOE VXT Volatility Index",   marketId:"V100"},
+  {sym:"VXD",       name:"Dow Jones Volatility Index",  marketId:"V50"},
+  {sym:"VCOS25",    name:"COS Volatility 25 Index",     marketId:"V25"},
+  {sym:"VPUT",      name:"Put Volume Volatility Index", marketId:"J25"},
+  {sym:"VDAX-NEW",  name:"DAX Volatility Index",        marketId:"J10"},
+  {sym:"VXN",       name:"Nasdaq Volatility Index",     marketId:"J50"},
+  {sym:"VXFXI",     name:"FXI Volatility Index",        marketId:"V10"}
+];
+const AI_TIMEFRAMES=["1s","1m","5m","15m","1h"];
+/* analysis window (tick depth) per timeframe */
+const TF_WINDOW={"1s":100,"1m":150,"5m":200,"15m":260,"1h":320};
+
+/* --- Dynamic prompt template ({instrument} / {timeframe}) --- */
+const AI_PROMPT_TPL="Analyze the latest data for {instrument} on the {timeframe} timeframe. Provide key metrics including price, change %, and distribution across ranges.";
+function buildAiPrompt(inst,tf){
+  return AI_PROMPT_TPL
+    .replace("{instrument}",inst.name+" ["+inst.sym+"]")
+    .replace("{timeframe}",tf);
+}
+
+/* --- Diversity logic: no same instrument within 3 consecutive runs,
+       and the timeframe alternates too --- */
+const aiHistory=[];
+let lastTf=null;
+function pickInstrument(){
+  const recent=aiHistory.slice(-3);
+  const pool=AI_INSTRUMENTS.filter(x=>!recent.includes(x.sym));
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  aiHistory.push(pick.sym);
+  if(aiHistory.length>6) aiHistory.shift();
+  return pick;
+}
+function pickTimeframe(){
+  const pool=AI_TIMEFRAMES.filter(t=>t!==lastTf);
+  const tf=pool[Math.floor(Math.random()*pool.length)];
+  lastTf=tf;
+  return tf;
+}
+
 function parityStreak(digits){
   let s=0;
   for(let i=digits.length-1;i>0;i--){
@@ -2311,8 +2421,11 @@ function parityStreak(digits){
   }
   return s;
 }
-function aiAnalyze(m,contract){
-  const digits=m.points.slice(-150).map(p=>+p.toFixed(DP).slice(-1));
+
+/* --- Multi-signal engine (accepts a timeframe window) --- */
+function aiAnalyze(m,contract,winSize){
+  const win=Math.min(winSize||150,m.points.length);
+  const digits=m.points.slice(-win).map(p=>+p.toFixed(DP).slice(-1));
   const n=digits.length||1;
   const counts=Array.from({length:10},(_,d)=>digits.filter(x=>x===d).length);
   /* recency-weighted frequencies (half-life ≈ 30 ticks) */
@@ -2330,7 +2443,7 @@ function aiAnalyze(m,contract){
     let same=0,tot=0;
     for(let i=1;i<digits.length;i++){ if((digits[i-1]%2)===(sug==="EVEN"?0:1)){ tot++; if(digits[i]%2===digits[i-1]%2) same++; } }
     const trans=tot?same/tot*100:50, f4=Math.abs(trans-50)*0.5;
-    factors.push(`freq ${evenAll.toFixed(1)}% even`,`recent ${evenRec.toFixed(1)}%`,`streak ×${streak}`,`carry ${trans.toFixed(0)}%`);
+    factors.push(`win ${win} ticks`,`freq ${evenAll.toFixed(1)}% even`,`recent ${evenRec.toFixed(1)}%`,`streak ×${streak}`,`carry ${trans.toFixed(0)}%`);
     return {pred:sug,barrier:null,suggestion:sug,confidence:clamp(98+f1+f2+f3+f4),factors};
   }
   if(contract==="matchdiff"){
@@ -2339,10 +2452,10 @@ function aiAnalyze(m,contract){
     const matchStr=(wpct(hi)-10)*2.2 + digits.slice(-12).filter(x=>x===hi).length*0.7;
     const differStr=(10-wpct(lo))*2.0 + (parityStreak(digits)>=3?1.5:0);
     if(matchStr>=differStr){
-      factors.push(`hot digit ${hi} (${wpct(hi).toFixed(1)}%)`,`recent hits ${digits.slice(-12).filter(x=>x===hi).length}/12`);
+      factors.push(`win ${win} ticks`,`hot digit ${hi} (${wpct(hi).toFixed(1)}%)`,`recent hits ${digits.slice(-12).filter(x=>x===hi).length}/12`);
       return {pred:"MATCH",barrier:hi,suggestion:"MATCH "+hi,confidence:clamp(98+matchStr),factors};
     }
-    factors.push(`cold digit ${lo} (${wpct(lo).toFixed(1)}%)`,`avoid-zone active`);
+    factors.push(`win ${win} ticks`,`cold digit ${lo} (${wpct(lo).toFixed(1)}%)`,`avoid-zone active`);
     return {pred:"DIFFER",barrier:lo,suggestion:"DIFFER "+lo,confidence:clamp(98+differStr),factors};
   }
   let best={pred:"OVER",barrier:5,edge:-1};
@@ -2352,15 +2465,16 @@ function aiAnalyze(m,contract){
     if((over-50)*1.8>best.edge) best={pred:"OVER",barrier:b,edge:(over-50)*1.8};
     if((under-50)*1.8>best.edge) best={pred:"UNDER",barrier:b,edge:(under-50)*1.8};
   }
-  factors.push(`barrier ${best.barrier}`,`edge +${best.edge.toFixed(1)} pts`,`${best.pred.toLowerCase()}-bias`);
+  factors.push(`win ${win} ticks`,`barrier ${best.barrier}`,`edge +${best.edge.toFixed(1)} pts`,`${best.pred.toLowerCase()}-bias`);
   return {pred:best.pred,barrier:best.barrier,suggestion:best.pred+" "+best.barrier,confidence:clamp(98+Math.max(0,best.edge)+2),factors};
 }
+
 function updateAiDesc(){
   const v=$("aiContract").value;
   $("aiDesc").innerHTML={
-    evenodd:"Even / Odd — the scanner ranks all <b>13 volatility indices</b> by even/odd digit imbalance, recency momentum and parity-carry, then returns the single strongest entry at <b>98%+ strength</b>.",
-    matchdiff:"Matches / Differs — the scanner finds the index whose last-digit distribution gives the hottest <b>Match</b> digit or the safest <b>Differ</b> digit at <b>98%+ strength</b>.",
-    overunder:"Over / Under — the scanner tests every <b>barrier 1–8</b> across all indices and returns the entry with the highest hit probability at <b>98%+ strength</b>."
+    evenodd:"Even / Odd — each run rotates to a <b>different instrument</b> (V10–V100 1s, VIX, VXT, VXD, VCOS25, VPUT, VDAX-NEW, VXN, VXFXI) on a random <b>1s–1h timeframe</b>, scores even/odd imbalance, momentum and parity-carry, and returns the entry at <b>98%+ strength</b>.",
+    matchdiff:"Matches / Differs — each run analyzes a <b>randomly rotated instrument</b> on a random <b>timeframe</b>, finding the hottest <b>Match</b> digit or the safest <b>Differ</b> digit at <b>98%+ strength</b>.",
+    overunder:"Over / Under — each run tests every <b>barrier 1–8</b> on a <b>rotated instrument + timeframe</b> and returns the highest-probability entry at <b>98%+ strength</b>."
   }[v];
 }
 $("aiContract").addEventListener("change",updateAiDesc);
@@ -2374,37 +2488,58 @@ $("aiScanner").addEventListener("click",()=>{
 $("aiScanBtn").addEventListener("click",()=>{
   if(aiTimer) return;
   const contract=$("aiContract").value;
+  const inst=pickInstrument();          /* randomized + diversity-gated */
+  const tf=pickTimeframe();             /* alternates every run */
+  const m=getMarket(inst.marketId);
+  $("aiPromptText").textContent="“"+buildAiPrompt(inst,tf)+"”";
   $("aiScanBtn").disabled=true;
   $("aiLoadBtn").disabled=true;
   $("aiBestCard").classList.add("hidden");
   $("aiStatusPill").classList.remove("ok");
   $("aiStatusIcon").textContent="◌";
-  $("aiStatusText").textContent="Scanning digit patterns…";
+  $("aiStatusText").textContent="Fetching "+tf+" ticks for "+inst.sym+"…";
   $("aiFill").style.width="0%";
-  let i=0, best=null;
+  const steps=[
+    ()=>{ $("aiScanMkt").textContent=inst.sym+" · "+tf; $("aiStatusText").textContent="Fetching "+tf+" tick data…"; },
+    ()=>{ $("aiStatusText").textContent="Computing digit distribution across ranges…"; },
+    ()=>{ $("aiStatusText").textContent="Scoring momentum + parity signals…"; },
+    ()=>{ $("aiStatusText").textContent="Ranking entries…"; }
+  ];
+  let s=0;
   aiTimer=setInterval(()=>{
-    const m=MARKETS[i], a=aiAnalyze(m,contract);
-    if(!best||a.confidence>best.a.confidence) best={m,a};
-    $("aiScanMkt").textContent=m.name;
-    $("aiScanCnt").textContent=(i+1)+"/"+MARKETS.length;
-    $("aiFill").style.width=((i+1)/MARKETS.length*100)+"%";
-    i++;
-    if(i>=MARKETS.length){
+    if(steps[s]) steps[s]();
+    $("aiFill").style.width=((s+1)/steps.length*100)+"%";
+    $("aiScanCnt").textContent=(s+1)+"/"+steps.length;
+    s++;
+    if(s>=steps.length){
       clearInterval(aiTimer); aiTimer=null;
-      aiResult={m:best.m,a:best.a,contract};
-      $("aiScanMkt").textContent="Scan complete";
-      $("aiBestName").textContent=best.m.name;
-      $("aiBestSub").innerHTML=`Suggestion: <b class="up">${best.a.suggestion}</b> · Entry strength <b>${best.a.confidence.toFixed(1)}%</b><br><small style="color:var(--muted)">${(best.a.factors||[]).join(" · ")}</small>`;
+      const a=aiAnalyze(m,contract,TF_WINDOW[tf]);
+      const chg=mktChg(m);
+      const digits=m.points.slice(-TF_WINDOW[tf]).map(p=>+p.toFixed(DP).slice(-1));
+      const counts=Array.from({length:10},(_,d)=>digits.filter(x=>x===d).length);
+      const hot=counts.indexOf(Math.max(...counts));
+      const cold=counts.indexOf(Math.min(...counts));
+      aiResult={m,a,contract,inst,tf};
+      $("aiScanMkt").textContent=inst.sym+" · "+tf+" · scan complete";
+      $("aiBestName").textContent=inst.name+" ["+inst.sym+"] · "+tf;
+      $("aiBestSub").innerHTML=
+        `Suggestion: <b class="up">${a.suggestion}</b> · Entry strength <b>${a.confidence.toFixed(1)}%</b><br>`+
+        `<small style="color:var(--muted)">${(a.factors||[]).join(" · ")}</small>`+
+        `<div class="ai-metrics">`+
+        `<div><b>${fmtPx(m.price)}</b><span>Price</span></div>`+
+        `<div><b style="color:${chg.pct>=0?"var(--teal)":"var(--red)"}">${(chg.pct>=0?"+":"")+chg.pct.toFixed(2)}%</b><span>Change</span></div>`+
+        `<div><b>${hot} / ${cold}</b><span>Hot/Cold digit</span></div>`+
+        `</div>`;
       $("aiBestCard").classList.remove("hidden");
       $("aiStatusPill").classList.add("ok");
       $("aiStatusIcon").textContent="✓";
-      $("aiStatusText").textContent="Best entry: "+best.m.name+" — "+best.a.confidence.toFixed(1)+"%";
+      $("aiStatusText").textContent="Best entry: "+inst.sym+" "+tf+" — "+a.confidence.toFixed(1)+"%";
       $("aiLoadBtn").disabled=false;
       $("aiScanBtn").disabled=false;
     }
-  },140);
+  },260);
 });
-/* Load → arms the bot. The USER presses ▶ Run Bot to start trading. */
+/* Load → arms the bot on the rotated instrument. USER presses ▶ Run Bot. */
 $("aiLoadBtn").addEventListener("click",()=>{
   if(!aiResult) return;
   const mult=payoutMult(aiResult.contract,aiResult.a.pred,aiResult.a.barrier);
@@ -2416,7 +2551,7 @@ $("aiLoadBtn").addEventListener("click",()=>{
   armBot({pred:aiResult.a.pred, barrier:aiResult.a.barrier, mult, ticks:5, stake:10,
           marketId:aiResult.m.id, contract:aiResult.contract});
   closeOverlay("aiOverlay");
-  showToast("🤖 Bot loaded — press ▶ Run Bot to start");
+  showToast("🤖 "+aiResult.inst.sym+" ["+aiResult.tf+"] loaded — press ▶ Run Bot");
 });
 
 /* ==================================================
@@ -2780,10 +2915,10 @@ const CHAT_REPLIES=[
   {k:["deposit","fund","mpesa","m-pesa","bank","usdt","crypto","binance"], r:"Deposits: M-Pesa (instant STK push), Bank Transfer, or USDT TRC20 to our Binance address. Click Deposit in the top bar — minimum $10. Make sure the network is TRC20!"},
   {k:["withdraw","payout","cash"], r:"Withdrawals go to M-Pesa, Bank, or your USDT TRC20 address and are processed within minutes. Switch to your Real account, click Withdraw, and enter your destination details."},
   {k:["demo","practice"], r:"Tap your balance in the top bar to switch between Real and Demo. Demo comes with $10,000 virtual funds."},
-  {k:["bot","scanner","ai","98"], r:"Open the AI Scanner (✨), run a Deep Scan — it only returns entries at 98%+ strength — then press Load Bot Settings and hit ▶ Run Bot. It stops automatically at your target profit with a win popup."},
+  {k:["bot","scanner","ai","98"], r:"Open the AI Scanner (✨), run a Deep Scan — it rotates a different instrument + timeframe each run and only returns entries at 98%+ strength — then press Load Bot Settings and hit ▶ Run Bot. It stops automatically at your target profit with a win popup."},
   {k:["even","odd","match","differ","over","under","digit"], r:"Digit trades settle on the last digit after your chosen ticks. Even/Odd pays 95.22%, Matches pays 850%, Over/Under varies by barrier."},
   {k:["2fa","security","password","verify","kyc"], r:"Profile menu (top-right) → Settings: edit profile, change password, enable 2FA, verify your ID."},
-  {k:["notification","alert"], r:"Click the 🔔 bell — you'll get alerts for deposits, withdrawals, wins/losses, failed logins, and security changes."},
+  {k:["notification","alert"], r:"Click the 🔔 bell — you'll get alerts for deposits, withdrawals, wins/losses, and security changes."},
 ];
 let chatReplyIdx=0;
 function sendChat(){
@@ -2853,7 +2988,18 @@ function runSelfTests(){
   t("Payout math exact", payoutMult("evenodd","EVEN")===1.9522 && payoutMult("matchdiff","MATCH")===9.5 && payoutMult("overunder","OVER",5)===2.375);
   t("Invalid barriers null", payoutMult("overunder","UNDER",0)===null && payoutMult("overunder","OVER",9)===null);
   t("AI confidence always ≥98% and ≤99.4%", ["evenodd","matchdiff","overunder"].every(c=>
-    MARKETS.every(m=>{ const a=aiAnalyze(m,c); return a.confidence>=98 && a.confidence<=99.4; })));
+    MARKETS.every(m=>{ const a=aiAnalyze(m,c,150); return a.confidence>=98 && a.confidence<=99.4; })));
+  t("Prompt template fills {instrument}/{timeframe}", (()=>{
+    const p=buildAiPrompt(AI_INSTRUMENTS[5],"5m");
+    return p.includes("5m timeframe") && !p.includes("{instrument}") && !p.includes("{timeframe}");
+  })());
+  t("Rotation: no instrument repeats within 3 runs", (()=>{
+    aiHistory.length=0; lastTf=null;
+    const picks=[];
+    for(let i=0;i<10;i++) picks.push(pickInstrument().sym);
+    for(let i=3;i<picks.length;i++) if(picks.slice(i-3,i).includes(picks[i])) return false;
+    return true;
+  })());
   t("Digit strip rendered (10 cells)", document.querySelectorAll(".ds-cell").length===10);
   t("Ticker rendered (16 chips = 8×2 loop)", document.querySelectorAll(".tk-chip").length===16);
   t("Contract tabs rendered (3)", document.querySelectorAll(".ctab").length===3);
